@@ -10,8 +10,13 @@
     "test": "jest"
   },
   "dependencies": {
+    "@notifee/react-native": "^9.1.8",
+    "@react-native-async-storage/async-storage": "^2.1.0",
+    "@react-native-community/push-notification-ios": "^1.11.0",
+    "@supersami/rn-foreground-service": "^2.2.1",
     "react": "18.3.1",
-    "react-native": "0.76.6"
+    "react-native": "0.76.6",
+    "react-native-background-timer": "^2.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
