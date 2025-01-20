@@ -4,7 +4,7 @@ import useTimer from '../hooks/useTimer';
 
 
 const Timer = () => {
-  const { isRunning, elapsedTime, start, stop, reset } = useTimer();
+  const { isRunning, elapsedTime, start, stop, reset, name } = useTimer();
 
   useEffect(() => {
     return () => {
@@ -28,6 +28,7 @@ const Timer = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.timer}>{formatTime(elapsedTime)}</Text>
+      <Text>Name: {name}</Text>
       <Button 
         onPress={isRunning ? stopForegroundService : startForegroundService} 
         title={isRunning ? 'Stop' : 'Start'} 
