@@ -1,17 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+import notifee, { 
+  AndroidColor, 
+  AndroidImportance,
+  EventType 
+} from '@notifee/react-native';
 import BackgroundTimer from 'react-native-background-timer';
-import notifee, { AndroidColor, AndroidImportance, EventType } from '@notifee/react-native';
-
-async function checkApplicationPermission() {
-  const settings = await notifee.requestPermission();
-
-  if (settings.authorizationStatus) {
-  } else {
-  }
-
-}
-
-
 
 const useTimer = () => {
   const [isRunning, setIsRunning] = useState(false);
@@ -23,7 +16,7 @@ const useTimer = () => {
   const updateNotification = async () => {
     try {
       const channelId = await notifee.createChannel({
-        id: 'timer123',
+        id: 'timer',
         name: 'Timer Channel',
         importance: AndroidImportance.HIGH,
       });
@@ -31,7 +24,7 @@ const useTimer = () => {
       await notifee.displayNotification({
         id: 'timer',
         title: `Time Tracker ${isRunning ? 'Running' : 'Stopped'}`,
-        body: `Elapsed Time: ${elapsedTime}`,
+        body: `Elapsed Time: ${formatTime(elapsedTime)}`,
         android: {
           channelId,
           asForegroundService: true,
@@ -58,21 +51,14 @@ const useTimer = () => {
         },
       });
     } catch (error) {
-      console.log('Notification Error:', error);
+      console.error('Notification Error:', error);
     }
   };
-
-
-  useEffect(() => {
-    checkApplicationPermission()
-    updateNotification();
-  },[])
 
   useEffect(() => {
     notifee.onBackgroundEvent(async ({ type, detail }) => {
       if (type === EventType.ACTION_PRESS) {
         if (detail.pressAction?.id === 'toggle') {
-          console.log('toggle')
           isRunning ? stop() : start();
         }
         if (detail.pressAction?.id === 'reset') {
@@ -80,23 +66,7 @@ const useTimer = () => {
         }
       }
     });
-  }, [isRunning]);
-
-  useEffect(() => {
-    notifee.onForegroundEvent(({ type, detail }) => {
-      console.log('detail', detail)
-      if (detail.pressAction?.id === 'toggle') {
-        isRunning ? stop() : start();
-      }
-      if (detail.pressAction?.id === 'reset') {
-        reset();
-      }
-    });
-  }, [])
-
-  useEffect(() => {
-    updateNotification();
-  }, [isRunning, elapsedTime]);
+  }, []);
 
   function generateRandomName(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -107,7 +77,6 @@ const useTimer = () => {
     }
     return result;
   }
-
 
   const postUserData = async () => {
     try {
@@ -132,26 +101,22 @@ const useTimer = () => {
     if (isRunning) {
       intervalRef.current = BackgroundTimer.setInterval(() => {
         setElapsedTime(prev => prev + 1);
+        updateNotification();
       }, 1000);
-
       apiIntervalRef.current = BackgroundTimer.setInterval(() => {
-        postUserData();
-      }, 5000);
+              postUserData();
+            }, 5000);
     } else {
       if (intervalRef.current) {
         BackgroundTimer.clearInterval(intervalRef.current);
       }
-      if (apiIntervalRef.current) {
-        BackgroundTimer.clearInterval(apiIntervalRef.current);
-      }
     }
+
+    updateNotification();
 
     return () => {
       if (intervalRef.current) {
         BackgroundTimer.clearInterval(intervalRef.current);
-      }
-      if (apiIntervalRef.current) {
-        BackgroundTimer.clearInterval(apiIntervalRef.current);
       }
     };
   }, [isRunning]);
@@ -161,10 +126,16 @@ const useTimer = () => {
   const reset = () => {
     stop();
     setElapsedTime(0);
-    setName('')
+    updateNotification();
   };
 
-  return { isRunning, elapsedTime, start, stop, reset, name};
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
+  return { isRunning, elapsedTime, start, stop, reset, name };
 };
 
 export default useTimer;

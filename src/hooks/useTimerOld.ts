@@ -12,7 +12,6 @@ async function checkApplicationPermission() {
 }
 
 
-
 const useTimer = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [elapsedTime, setElapsedTime] = useState(0);
@@ -20,27 +19,29 @@ const useTimer = () => {
   const apiIntervalRef = useRef<number | null>(null);
   const [name, setName] = useState('');
 
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+  };
+
   const updateNotification = async () => {
     try {
       const channelId = await notifee.createChannel({
-        id: 'timer123',
+        id: 'timer',
         name: 'Timer Channel',
         importance: AndroidImportance.HIGH,
       });
-
+      console.log('channelId', channelId);
       await notifee.displayNotification({
         id: 'timer',
         title: `Time Tracker ${isRunning ? 'Running' : 'Stopped'}`,
-        body: `Elapsed Time: ${elapsedTime}`,
+        body: `Elapsed Time: ${formatTime(elapsedTime)}`,
         android: {
           channelId,
           asForegroundService: true,
           color: AndroidColor.WHITE,
           colorized: true,
-          ongoing: true,
-          pressAction: {
-            id: 'default',
-          },
           actions: [
             {
               title: isRunning ? 'Stop' : 'Start',
@@ -57,34 +58,24 @@ const useTimer = () => {
           ],
         },
       });
-    } catch (error) {
-      console.log('Notification Error:', error);
+    }
+    catch (error) {
+      console.error('Notification Error:', error);
     }
   };
 
-
   useEffect(() => {
     checkApplicationPermission()
+    // createNotification()
     updateNotification();
-  },[])
+  }, [])
 
   useEffect(() => {
-    notifee.onBackgroundEvent(async ({ type, detail }) => {
-      if (type === EventType.ACTION_PRESS) {
-        if (detail.pressAction?.id === 'toggle') {
-          console.log('toggle')
-          isRunning ? stop() : start();
-        }
-        if (detail.pressAction?.id === 'reset') {
-          reset();
-        }
-      }
-    });
-  }, [isRunning]);
+    updateNotification();
+  }, [isRunning, elapsedTime]);
 
   useEffect(() => {
-    notifee.onForegroundEvent(({ type, detail }) => {
-      console.log('detail', detail)
+    const subscription = notifee.onForegroundEvent(({ type, detail }) => {
       if (detail.pressAction?.id === 'toggle') {
         isRunning ? stop() : start();
       }
@@ -92,11 +83,9 @@ const useTimer = () => {
         reset();
       }
     });
-  }, [])
 
-  useEffect(() => {
-    updateNotification();
-  }, [isRunning, elapsedTime]);
+    return () => subscription();
+  }, [isRunning]);
 
   function generateRandomName(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -164,7 +153,7 @@ const useTimer = () => {
     setName('')
   };
 
-  return { isRunning, elapsedTime, start, stop, reset, name};
+  return { isRunning, elapsedTime, start, stop, reset, name };
 };
 
 export default useTimer;
