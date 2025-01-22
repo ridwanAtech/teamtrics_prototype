@@ -7,22 +7,7 @@ import { NativeModules } from 'react-native';
 
 
 const Timer = () => {
-  const { LiveActivity } = NativeModules;
   const { isRunning, elapsedTime, start, stop, reset, name } = useTimer();
-
-
-  useEffect(() => {
-    const initLiveActivity = async () => {
-      try {
-        const result = await LiveActivity.startActivity();
-        console.log('LiveActivity Result:', result);
-      } catch (error) {
-        console.error('LiveActivity Error:', error);
-      }
-    };
-
-    initLiveActivity();
-  }, [LiveActivity]);
 
   useEffect(() => {
     return () => {
