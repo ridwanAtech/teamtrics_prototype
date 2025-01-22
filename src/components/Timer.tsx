@@ -1,9 +1,14 @@
 import React, { useEffect } from 'react';
 import { View, Text, Button, StyleSheet } from 'react-native';
 import useTimer from '../hooks/useTimer';
+import { TimerActivity } from '../hooks/NativeTimerActivity';
+import { NativeModules } from 'react-native';
+
 
 
 const Timer = () => {
+  const { LiveActivity } = NativeModules;
+  console.log('Live', LiveActivity)
   const { isRunning, elapsedTime, start, stop, reset, name } = useTimer();
 
   useEffect(() => {
@@ -13,9 +18,15 @@ const Timer = () => {
 
   const startForegroundService = async () => {
     start();
+    TimerActivity.startTimer(elapsedTime)
   };
 
+  useEffect(() => {
+    TimerActivity.updateTimer(elapsedTime || 0, isRunning)
+  }, [elapsedTime, isRunning])
+
   const stopForegroundService = async () => {
+    TimerActivity.endTimer()
     stop();
   };
 

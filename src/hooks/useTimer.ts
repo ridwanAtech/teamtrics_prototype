@@ -1,13 +1,13 @@
 import { useState, useEffect, useRef } from 'react';
 import BackgroundTimer from 'react-native-background-timer';
-import notifee, { AndroidColor, AndroidImportance, EventType } from '@notifee/react-native';
+// import notifee, { AndroidColor, AndroidImportance, EventType } from '@notifee/react-native';
 
 async function checkApplicationPermission() {
-  const settings = await notifee.requestPermission();
+  // const settings = await notifee.requestPermission();
 
-  if (settings.authorizationStatus) {
-  } else {
-  }
+  // if (settings.authorizationStatus) {
+  // } else {
+  // }
 
 }
 
@@ -21,45 +21,45 @@ const useTimer = () => {
   const [name, setName] = useState('');
 
   const updateNotification = async () => {
-    try {
-      const channelId = await notifee.createChannel({
-        id: 'timer123',
-        name: 'Timer Channel',
-        importance: AndroidImportance.HIGH,
-      });
+    // try {
+    //   const channelId = await notifee.createChannel({
+    //     id: 'timer123',
+    //     name: 'Timer Channel',
+    //     importance: AndroidImportance.HIGH,
+    //   });
 
-      await notifee.displayNotification({
-        id: 'timer',
-        title: `Time Tracker ${isRunning ? 'Running' : 'Stopped'}`,
-        body: `Elapsed Time: ${elapsedTime}`,
-        android: {
-          channelId,
-          asForegroundService: true,
-          color: AndroidColor.WHITE,
-          colorized: true,
-          ongoing: true,
-          pressAction: {
-            id: 'default',
-          },
-          actions: [
-            {
-              title: isRunning ? 'Stop' : 'Start',
-              pressAction: {
-                id: 'toggle',
-              },
-            },
-            {
-              title: 'Reset',
-              pressAction: {
-                id: 'reset',
-              },
-            },
-          ],
-        },
-      });
-    } catch (error) {
-      console.log('Notification Error:', error);
-    }
+    //   await notifee.displayNotification({
+    //     id: 'timer',
+    //     title: `Time Tracker ${isRunning ? 'Running' : 'Stopped'}`,
+    //     body: `Elapsed Time: ${elapsedTime}`,
+    //     android: {
+    //       channelId,
+    //       asForegroundService: true,
+    //       color: AndroidColor.WHITE,
+    //       colorized: true,
+    //       ongoing: true,
+    //       pressAction: {
+    //         id: 'default',
+    //       },
+    //       actions: [
+    //         {
+    //           title: isRunning ? 'Stop' : 'Start',
+    //           pressAction: {
+    //             id: 'toggle',
+    //           },
+    //         },
+    //         {
+    //           title: 'Reset',
+    //           pressAction: {
+    //             id: 'reset',
+    //           },
+    //         },
+    //       ],
+    //     },
+    //   });
+    // } catch (error) {
+    //   console.log('Notification Error:', error);
+    // }
   };
 
 
@@ -68,31 +68,31 @@ const useTimer = () => {
     updateNotification();
   },[])
 
-  useEffect(() => {
-    notifee.onBackgroundEvent(async ({ type, detail }) => {
-      if (type === EventType.ACTION_PRESS) {
-        if (detail.pressAction?.id === 'toggle') {
-          console.log('toggle')
-          isRunning ? stop() : start();
-        }
-        if (detail.pressAction?.id === 'reset') {
-          reset();
-        }
-      }
-    });
-  }, [isRunning]);
+  // useEffect(() => {
+  //   notifee.onBackgroundEvent(async ({ type, detail }) => {
+  //     if (type === EventType.ACTION_PRESS) {
+  //       if (detail.pressAction?.id === 'toggle') {
+  //         console.log('toggle')
+  //         isRunning ? stop() : start();
+  //       }
+  //       if (detail.pressAction?.id === 'reset') {
+  //         reset();
+  //       }
+  //     }
+  //   });
+  // }, [isRunning]);
 
-  useEffect(() => {
-    notifee.onForegroundEvent(({ type, detail }) => {
-      console.log('detail', detail)
-      if (detail.pressAction?.id === 'toggle') {
-        isRunning ? stop() : start();
-      }
-      if (detail.pressAction?.id === 'reset') {
-        reset();
-      }
-    });
-  }, [])
+  // useEffect(() => {
+  //   notifee.onForegroundEvent(({ type, detail }) => {
+  //     console.log('detail', detail)
+  //     if (detail.pressAction?.id === 'toggle') {
+  //       isRunning ? stop() : start();
+  //     }
+  //     if (detail.pressAction?.id === 'reset') {
+  //       reset();
+  //     }
+  //   });
+  // }, [])
 
   useEffect(() => {
     updateNotification();
