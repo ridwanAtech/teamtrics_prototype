@@ -20,15 +20,11 @@ struct FoodDeliveryAttributes: ActivityAttributes {
 }
 
 struct FoodDeliveryLiveActivity: Widget {
-    var body: some WidgetConfiguration {
+    var body: some WidgetConfiguration  {
         ActivityConfiguration(for: FoodDeliveryAttributes.self) { context in
-            // Lock screen/banner UI goes here
             VStack {
-                Text("Hello")
+                Text(context.state.leadingName)
             }
-            .activityBackgroundTint(Color.cyan)
-            .activitySystemActionForegroundColor(Color.black)
-
         } dynamicIsland: { context in
             DynamicIsland {
                 // Expanded UI goes here.  Compose the expanded UI through
