@@ -1,26 +1,29 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Platform, PermissionsAndroid, NativeModules, Button } from 'react-native';
-import Timer from './src/components/Timer';
+import { SafeAreaView, StyleSheet, Platform, PermissionsAndroid, Button, Text, View } from 'react-native';
+import useBackgroundService from './src/utils/useBackgroundService';
 
-const {FoodDelivery} = NativeModules;
 
 const App = () => {
-  console.log('Food', FoodDelivery)
+  const { backgroundTask, startBackgroundTask, stopBackgroundTask,
+    name, xTimeHitApi, elapsedTime
+  } = useBackgroundService();
   useEffect(() => {
     requestPermissions();
   }, []);
 
-  const onStartActivity = () => {
-    FoodDelivery.startActivity();
-  };
 
-  const onEndActivity = () => {
-    FoodDelivery.endActivity();
-  };
 
-  const updateActivity = () => {
-    FoodDelivery.updateActivity('Updated Activity');
-  };
+  // const onStartActivity = () => {
+  //   FoodDelivery.startActivity();
+  // };
+
+  // const onEndActivity = () => {
+  //   FoodDelivery.endActivity();
+  // };
+
+  // const updateActivity = () => {
+  //   FoodDelivery.updateActivity('Updated Activity');
+  // };
 
   const requestPermissions = async () => {
     if (Platform.OS === 'android' && Platform.Version >= 33) {
@@ -32,10 +35,25 @@ const App = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <Timer />
-      <Button title="Start Activity" onPress={onStartActivity} />
-      <Button title="Update Activity" onPress={updateActivity} />
-      <Button title="End Activity" onPress={onEndActivity} />
+      <View style={{
+        flex: 1,
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}>
+      <Text style={{ fontSize: 20, color: 'white' }}>Name: {name || '-'}</Text>
+      <Text style={{ fontSize: 20, color: 'white' }}>Time Hit Api {xTimeHitApi}</Text>
+      <Text style={{ fontSize: 20, color: 'white' }}  >Elapsed Time {elapsedTime}</Text>
+      </View>
+      <Button
+        title="Stop Sync"
+        onPress={stopBackgroundTask}
+      />
+      <Button
+        title="Start Sync"
+        onPress={startBackgroundTask}
+      />
+      {/* <Timer /> */}
     </SafeAreaView>
   );
 };
