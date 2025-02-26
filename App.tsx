@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView, StyleSheet, Platform, PermissionsAndroid, NativeModules, Button } from 'react-native';
+import { SafeAreaView, StyleSheet, Platform, PermissionsAndroid, NativeModules, Button, View } from 'react-native';
 import Timer from './src/components/Timer';
 
 const {FoodDelivery} = NativeModules;
@@ -31,12 +31,9 @@ const App = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Timer />
-      <Button title="Start Activity" onPress={onStartActivity} />
-      <Button title="Update Activity" onPress={updateActivity} />
-      <Button title="End Activity" onPress={onEndActivity} />
-    </SafeAreaView>
+    </View>
   );
 };
 
